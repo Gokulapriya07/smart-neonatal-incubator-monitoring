@@ -1,0 +1,76 @@
+#include <LiquidCrystal.h>
+#include <DHT.h>
+
+#define DHTPIN 8
+#define DHTTYPE DHT11
+
+#define RELAYPIN 9
+#define BUZZERPIN 10
+#define LEDPIN 11
+
+LiquidCrystal lcd(2,3,4,5,6,7);
+DHT dht(DHTPIN, DHTTYPE);
+
+float thresholdTemp = 35.0;
+
+void setup()
+{
+  lcd.begin(16,2);
+  dht.begin();
+
+  pinMode(RELAYPIN, OUTPUT);
+  pinMode(BUZZERPIN, OUTPUT);
+  pinMode(LEDPIN, OUTPUT);
+
+  digitalWrite(RELAYPIN, HIGH); 
+  digitalWrite(LEDPIN, LOW);
+
+  lcd.setCursor(0,0);
+  lcd.print("System Starting");
+  delay(2000);
+  lcd.clear();
+}
+
+void loop()
+{
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+
+  if (isnan(temperature) || isnan(humidity))
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Sensor Error");
+    delay(2000);
+    return;
+  }
+
+  lcd.setCursor(0,0);
+  lcd.print("Temp: ");
+  lcd.print(temperature);
+  lcd.print((char)223);
+  lcd.print("C   ");
+
+  lcd.setCursor(0,1);
+  lcd.print("Hum: ");
+  lcd.print(humidity);
+  lcd.print("%   ");
+
+  if (temperature > thresholdTemp)
+  {
+    digitalWrite(RELAYPIN, LOW);  
+
+    tone(BUZZERPIN, 5000);   // Passive buzzer sound (louder frequency)
+
+    digitalWrite(LEDPIN, HIGH);
+    delay(300);
+    digitalWrite(LEDPIN, LOW);
+    delay(300);
+  }
+  else
+  {
+    digitalWrite(RELAYPIN, HIGH); 
+    noTone(BUZZERPIN);            // Stop passive buzzer
+    digitalWrite(LEDPIN, LOW);
+    delay(2000);
+  }
+}
