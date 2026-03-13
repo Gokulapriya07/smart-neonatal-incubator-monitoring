@@ -22,5 +22,5 @@ If the temperature exceeds the safe limit (**35°C**), the system triggers an **
 - Implement data logging for long-term monitoring
 
 ##  Author
-**Gokulapriya**  
+**Gokulapriya J**  
 Computer Science and Medical Engineering Student
